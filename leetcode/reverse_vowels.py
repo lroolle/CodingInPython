@@ -9,8 +9,6 @@ Given s = "hello", return "holle".
 Example 2:
 
 Given s = "leetcode", return "leotcede".
-
-
 """
 
 
