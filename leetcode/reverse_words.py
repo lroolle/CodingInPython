@@ -1,4 +1,4 @@
-"""## Reverse Words
+"""# Reverse Words
 
 > Given a sentence, reverse the words one by one, keeping the blank.
 
