@@ -22,13 +22,23 @@ such that they add up to a specific target.
 def two_sum(a, target):
     off = 0
     while off < len(a):
-
         for i in range(off + 1, len(a)):
-
             if a[off] + a[i] == target:
                 return [off, i]
-
         off += 1
 
 
+def two_sum2(a, target):
+        map = dict()
+        size = len(a)
+        for x in range(size):
+            map[a[x]] = x
+        for x in range(size):
+            idx1 = x
+            idx2 = map.get(target - a[x])
+            if idx2:
+                return [idx1, idx2]
+
+
 print(two_sum([0, 1, 2, 3], 4))
+print(two_sum2([0, 1, 2, 3], 4))
