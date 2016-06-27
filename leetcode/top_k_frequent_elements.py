@@ -14,10 +14,7 @@ Note:
 
 
 def top_k(nums, k):
-    d = dict()
-
-    for s in set(nums):
-        d[s] = 0
+    d = {x: 0 for x in set(nums)}
 
     for x in nums:
         d[x] += 1
@@ -27,4 +24,4 @@ def top_k(nums, k):
     return res[:k]
 
 
-print(top_k([1, 1, 1, 2, 2, 3], 2))
+print(top_k([1, 1, 1, 2, 2, 3], 3))
