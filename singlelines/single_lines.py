@@ -15,6 +15,10 @@ def filter_primes(n):
     # iterator instead of lists
 
 
+def is_prime(num):
+    
+
+
 def read_file():
     with open('t.csv', 'r') as f:
         rows = [line.strip().split(',') for line in f.readlines()]
