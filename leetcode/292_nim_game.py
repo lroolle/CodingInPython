@@ -1,4 +1,4 @@
-"""Nim Game
+"""Leet Code 292. Nim Game
 
 > You are playing the following Nim Game with your friend:
 There is a heap of stones on the table, each time one of you

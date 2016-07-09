@@ -1,4 +1,4 @@
-"""Count Bits
+"""LeetCode 338. Count Bits
 
 > Given a non negative integer number `num`. For every numbers i in the
 range `0 ≤ i ≤ num` calculate the number of 1's in their binary
