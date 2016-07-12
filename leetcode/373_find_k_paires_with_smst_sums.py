@@ -33,8 +33,10 @@ All possible pairs are returned from the sequence:
 [1, 3], [2, 3]
 """
 
+import heapq
 
-def find_smallest_sums(nums1, nums2, k):
+
+def find_smallest_sums1(nums1, nums2, k):
     res = list()
     for m in nums1:
         for n in nums2:
@@ -43,9 +45,24 @@ def find_smallest_sums(nums1, nums2, k):
     return res[:k]
 
 
+def k_smallest_pairs2(nums1, nums2, k, heap=[]):
+    for n1 in nums1:
+        for n2 in nums2:
+            if len(heap) < k:
+                heapq.heappush(heap, (-n1 - n2, [n1, n2]))
+            else:
+                if heap and -heap[0][0] > n1 + n2:
+                    heapq.heappop(heap)
+                    heapq.heappush(heap, (-n1 - n2, [n1, n2]))
+                else:
+                    break
+    return [heapq.heappop(heap)[1] for _ in range(k) if heap]
+
+
 nums1 = [1, 1, 2]
 nums2 = [1, 2, 3]
 k = 3
 
-res = find_smallest_sums(nums1, nums2, k)
+res = k_smallest_pairs1(nums1, nums2, k)
 print(res)
+print(k_smallest_pairs2(nums1, nums2, k))

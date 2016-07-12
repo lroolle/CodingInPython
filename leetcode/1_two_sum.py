@@ -1,4 +1,4 @@
-"""Leet Code 1. Two Sum
+"""Leet Code 1. `Two Sum
 
 # Two Sum
 > Given an array of integers, return indices of the two numbers
