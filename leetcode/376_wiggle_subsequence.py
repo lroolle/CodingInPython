@@ -35,6 +35,17 @@ Can you do it in O(n) time?
 """
 
 
-def wig_sub(nums):
-
-    pass
+def wiggle_sq(nums): 
+    if len(num) <= 2:
+        return len(num)
+    
+    prev = nums[0]
+    max_len = 1
+    increasing = a[0] > a[1]
+    
+    for num in nums:
+        if (increasing and (num > prev))  or (not increasing and (num < prev)):
+            increasing = not increasing
+            max_len += 1
+        prev = num
+    return max_len
