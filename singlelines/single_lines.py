@@ -3,8 +3,8 @@
 
 """Python Single Line TIPS
 
-Inspired By 「 一行 Python 能实现什么丧心病狂的功能？ 」
-- https://www.zhihu.com/question/37046157
+> Inspired By 「 一行 Python 能实现什么丧心病狂的功能？ 」
+> (https://www.zhihu.com/question/37046157)
 
 """
 
@@ -16,7 +16,7 @@ def filter_primes(n):
 
 
 def is_prime(num):
-    
+    pass
 
 
 def read_file():

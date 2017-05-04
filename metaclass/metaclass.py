@@ -24,8 +24,7 @@ class MyType(type):
         super(MyType, self).__init__(name, bases, attrs)
 
         # classregistry.register(self, self.interfaces)
-        print
-        "Would register class %s now." % self
+        print("Would register class %s now." % self)
 
     def __add__(self, other):
         class AutoClass(self, other):
@@ -37,8 +36,7 @@ class MyType(type):
 
     def unregister(self):
         # classregistry.unregister(self)
-        print
-        "Would unregister class %s now." % self
+        print("Would unregister class %s now." % self)
 
 
 class MyObject:
@@ -50,8 +48,7 @@ class NoneSample(MyObject):
 
 
 # Will print "NoneType None"
-print
-type(NoneSample), repr(NoneSample)
+print(type(NoneSample), repr(NoneSample))
 
 
 class Example(MyObject):
@@ -70,8 +67,7 @@ inst = Example(10)
 # Will fail with an AttributeError
 # inst.unregister()
 
-print
-inst + inst
+print(inst + inst)
 
 
 class Sibling(MyObject):
@@ -81,7 +77,5 @@ class Sibling(MyObject):
 ExampleSibling = Example + Sibling
 # ExampleSibling is now a subclass of both Example and Sibling (with no
 # content of its own) although it will believe it's called 'AutoClass'
-print
-ExampleSibling
-print
-ExampleSibling.__mro__
+print(ExampleSibling)
+print(ExampleSibling.__mro__)

@@ -1,5 +1,7 @@
 # the metaclass will automatically get passed the same argument
 # that you usually pass to `type`
+
+
 def upper_attr(future_class_name, future_class_parents, future_class_attr):
     """
       Return a class object, with the list of its attribute turned
@@ -19,7 +21,6 @@ def upper_attr(future_class_name, future_class_parents, future_class_attr):
 
 
 # __metaclass__ = upper_attr # this will affect all classes in the module
-
 class Foo(metaclass=upper_attr):  # global __metaclass__ won't work with "object" though
     # but we can define __metaclass__ here instead to affect only this class
     # and this will work with "object" children
