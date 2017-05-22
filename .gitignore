@@ -3,6 +3,8 @@
 #################
 
 
+env/
+env2/
 *.idea
 *.pydevproject
 .project
