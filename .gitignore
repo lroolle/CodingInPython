@@ -5,6 +5,7 @@
 
 env/
 env2/
+env*/
 *.idea
 *.pydevproject
 .project
