@@ -1,11 +1,13 @@
 
-
 import os
 import re
+import json
 import shlex
 import traceback
 import warnings
 
+
+import collections
 from bs4 import FeatureNotFound
 from bs4.builder import (
     builder_registry,
@@ -18,7 +20,25 @@ from bs4.element import (
 )
 
 
-class UglyTag(Tag):
+def build_html(d, depth=1):
+    """ Build HTML string from dict"""
+    html = ''
+    if isinstance(d, dict):
+        for k in d:
+            l_s = '&nbsp;' * depth * 2
+            l_b = '<br/>' if isinstance(d[k], (dict, tuple, list)) else ''
+            html += '{l_s}<label>{k}: </label>{l_b}<{k}>{v}</{k}><br/>'.format(
+                l_s=l_s, l_b=l_b, k=k, v=build_html(d[k], depth=depth + 1)
+            )
+    elif isinstance(d, (list, tuple)):
+        for item in d:
+            html += '{}<br/>'.format(build_html(item, depth=depth + 1))
+    else:
+        html += str(d)
+    return html
+
+
+class CTag(Tag):
     """ Select(selector)
     Normal: 
         - ``tr:nth-of-type(1) > td:nth-of-type(1)``;
@@ -29,12 +49,12 @@ class UglyTag(Tag):
             Same as:  ``tr:text=["name"] > td:nth-of-type(2)``
         - Cut off: 
             ``div.content > b:text=["first\\ line"] < b:text=["second\\ line"]``
-            This will select content **between** ``b:text=["second\\ line"]``
+            This will select content between ``b:text=["second\\ line"]``
             and ``b:text=["first\\ line"]`` **in** ``div.content`` 
 
     **NOTE:** 
         To handle special symbols: 
-        - Text space must escape like ``"\\ "`` in text=["text"], 
+        - Space must escape like ``"\\ "``, 
             For example, ``div:text=["name"] > b:text=["content\\ detail"]``;
     """
 
@@ -48,8 +68,8 @@ class UglyTag(Tag):
             for partial_selector in selector.split(','):
                 partial_selector = partial_selector.strip()
                 if partial_selector == '':
-                    raise ValueError(
-                        'Invalid group selection syntax: %s' % selector)
+                    raise ValueError \
+                        ('Invalid group selection syntax: %s' % selector)
                 candidates = self.select(partial_selector, limit=limit)
                 for candidate in candidates:
                     if candidate not in context:
@@ -105,20 +125,16 @@ class UglyTag(Tag):
             elif '#' in token:
                 # ID selector
                 tag_name, tag_id = token.split('#', 1)
-
                 def id_matches(tag):
                     return tag.get('id', None) == tag_id
-
                 checker = id_matches
 
             elif '.' in token:
                 # Class selector
                 tag_name, klass = token.split('.', 1)
                 classes = set(klass.split('.'))
-
                 def classes_match(candidate):
                     return classes.issubset(candidate.get('class', []))
-
                 checker = classes_match
 
             elif ':' in token and not self.quoted_colon.search(token):
@@ -142,10 +158,9 @@ class UglyTag(Tag):
                         raise ValueError('Text illegal')
 
                     def find_text(tag):
-                        text = re.compile(
-                            pseudo_text) if not strict else pseudo_text
+                        text = re.compile \
+                            (pseudo_text) if not strict else pseudo_text
                         return tag.find(text=text) is not None
-
                     checker = find_text
                 elif pseudo_type in {'nth-of-type', 'n', 'nth-of-child'}:
                     try:
@@ -169,7 +184,6 @@ class UglyTag(Tag):
                             if self.count == self.destination:
                                 return True
                             return False
-
                     checker = Counter(pseudo_value).nth_child_of_type
                 else:
                     raise ValueError(
@@ -192,19 +206,18 @@ class UglyTag(Tag):
                 # sibling that's a tag.
                 def next_tag_sibling(tag):
                     yield tag.find_next_sibling(True)
-
                 recursive_candidate_generator = next_tag_sibling
             elif token == '<':
                 stop_token = tokens[index + 1]
 
                 def until_sibling(tag):
                     stop_id = id(self.select_one(stop_token))
-                    start_sibling = current_context[
-                        0] if current_context else tag
+                    start_sibling = current_context
+                        [0] if current_context else tag
                     for _sibling in start_sibling.next_siblings:
-                        print('_' * 5, _sibling, '_' * 5)
+                        if self._select_debug:
+                            print( '_' *5, _sibling, '_'* 5)
                         if id(_sibling) == stop_id:
-                            print('stop')
                             raise StopIteration()
                         yield _sibling
 
@@ -324,7 +337,7 @@ class UglyTag(Tag):
         return current_context
 
 
-class UglySoup(UglyTag):
+class UglySoup(CTag):
     """ This Class is a Customized bs4 soup 
     bs4.BeautifulSoup -> More ugly details 
     """
@@ -340,12 +353,15 @@ class UglySoup(UglyTag):
                                   "so I'm using the best available %(" \
                                   "markup_type)s parser for this system (\"%(" \
                                   "parser)s\"). This usually isn't a problem, " \
+                                  "" \
                                   "but if you run this code on another " \
                                   "system, or in a different virtual " \
                                   "environment, it may use a different parser " \
+                                  "" \
                                   "and behave differently.\n\nThe code that " \
                                   "caused this warning is on line %(" \
                                   "line_number)s of the file %(filename)s. To " \
+                                  "" \
                                   "get rid of this warning, change code that " \
                                   "looks like this:\n\n BeautifulSoup([your " \
                                   "markup])\n\nto this:\n\n BeautifulSoup([" \
@@ -567,7 +583,7 @@ class UglySoup(UglyTag):
             self.popTag()
 
     def reset(self):
-        UglyTag.__init__(self, self, self.builder, self.ROOT_TAG_NAME)
+        CTag.__init__(self, self, self.builder, self.ROOT_TAG_NAME)
         self.hidden = 1
         self.builder.reset()
         self.current_data = []
@@ -578,7 +594,7 @@ class UglySoup(UglyTag):
 
     def new_tag(self, name, namespace=None, nsprefix=None, **attrs):
         """Create a new tag associated with this soup."""
-        return UglyTag(None, self.builder, name, namespace, nsprefix, attrs)
+        return CTag(None, self.builder, name, namespace, nsprefix, attrs)
 
     def new_string(self, s, subclass=NavigableString):
         """Create a new NavigableString associated with this soup."""
@@ -740,8 +756,8 @@ class UglySoup(UglyTag):
                  or not self.parse_only.search_tag(name, attrs))):
             return None
 
-        tag = UglyTag(self, self.builder, name, namespace, nsprefix, attrs,
-                  self.currentTag, self._most_recent_element)
+        tag = CTag(self, self.builder, name, namespace, nsprefix, attrs,
+                   self.currentTag, self._most_recent_element)
         if tag is None:
             return tag
         if self._most_recent_element:
@@ -778,3 +794,48 @@ class UglySoup(UglyTag):
             indent_level = 0
         return prefix + super(UglySoup, self).decode(
             indent_level, eventual_encoding, formatter)
+
+
+class JSONSoup(UglySoup):
+    """ JSON Soup 
+
+    For JSONParser, make use of csselector helper and parse JSON like an html
+
+    >>> _json = ''{"data": {"info": "Made in Abyss"}}''
+    >>> soup = JSONSoup(_json, 'html5lib')
+    >>> soup.select('data > info')
+       [<info>Made in Abyss</info>]
+    >>> soup.select('data > info')[0].get_text()
+        "Made in Abyss"
+    """
+
+    def __init__(self, _json, features=None, builder=None,
+                 parse_only=None, from_encoding=None,
+                 exclude_encodings=None,
+                 **kwargs):
+        html = self.get_html(_json)
+        super(JSONSoup, self).__init__(
+            html, features, builder, parse_only, from_encoding,
+            exclude_encodings, **kwargs
+        )
+
+    def get_obj(self, _json):
+        obj_pairs_hook = collections.OrderedDict
+
+        if isinstance(_json, str):
+            return json.loads(_json, object_pairs_hook=obj_pairs_hook)
+        if isinstance(_json, bytes):
+            return json.loads(
+                _json.decode('utf-8'), object_pairs_hook=obj_pairs_hook)
+        return _json
+
+    def get_html(self, _json):
+        obj = self.get_obj(_json)
+        return build_html(obj)
+
+    def insert_before(self, successor):
+        pass
+
+    def insert_after(self, successor):
+        pass
+
