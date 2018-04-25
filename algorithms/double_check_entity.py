@@ -1,5 +1,9 @@
 
 
+def _t(tag):
+    return tag.split('_')[0]
+
+
 def get_entity_str(entity_list, offset):
     size = len(entity_list)
     entity_str = ''
@@ -10,7 +14,8 @@ def get_entity_str(entity_list, offset):
         offset += 1
         if offset == size:
             single_entity = True
-        next_diff = entity_list[offset]['entity'][0] != tag[0] if offset < size else None
+        # next_diff = entity_list[offset]['entity'][0] != tag[0] if offset < size else None
+        next_diff = _t(entity_list[offset]['entity']) != _t(tag) if offset < size else None
         if next_diff and tag.endswith('_s'):
             single_entity = True
 
@@ -18,7 +23,8 @@ def get_entity_str(entity_list, offset):
             entity_str += word
 
         if tag.endswith('_e') or single_entity:
-            return tag[0], entity_str, offset
+            # return tag[0], entity_str, offset
+            return _t(tag), entity_str, offset
 
 
 def double_check(ltp_entity_list, jieba_entity_list):
@@ -76,3 +82,42 @@ jieba = [{'word': 'a', 'entity': 'o'}, {'word': 'b', 'entity': 'n_s'},
          {'word': 'klmn', 'entity': 'o'}, ]
 
 double_check(ltp, jieba)
+print('Ok "{}"<-"{}"'.format(jieba_tag, jieba_entity_str))
+
+
+def get_entity_remark(ltp, jieba):
+    i, j, k, ret = 0, 0, 0, list()
+    consumed = True
+
+    for ltp_item in ltp:
+        ltp_word = ltp_item.get('word')
+        i += len(ltp_word)
+
+        if ret and not _t(ret[-1]['entity']) == _t(ltp_item.get('entity')):
+            if not any([ltp_item.get('entity') == 'o', ret[-1]['entity'] == 'o']):
+                consumed = True
+
+        if consumed or ltp_item.get('entity') == 'o' or entity == 'o':
+            entity = ltp_item.get('entity')
+
+        while k < len(jieba):
+            jieba_word = jieba[k]
+            k += 1
+            j += len(jieba_word)
+            if j <= i:
+                if ret and _t(ret[-1]['entity']) == _t(entity):
+                    if ret[-1]['entity'].endswith(('_s', '_i')):
+                        entity = _t(entity) + '_e'
+                    if ret[-1]['entity'].endswith('_e'):
+                        ret[-1]['entity'] = _t(entity) + '_i'
+
+                ret.append({'word': jieba_word, 'entity': entity})
+                consumed = True
+            else:
+                k -= 1
+                j -= len(jieba_word)
+                consumed = False
+                break
+
+    double_check(ltp, ret)
+    return ret

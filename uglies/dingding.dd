@@ -1,0 +1,152 @@
+
+
+Function DingQuanQuan()
+    // 打卡（圈圈）
+    Delay 1611- TickCount()
+     TouchDownEvent 119,558,0
+     Delay 1646- TickCount()
+      TouchUpEvent 0
+      Delay 8295- TickCount()
+       TouchDownEvent 356,1219,0
+       Delay 8371- TickCount()
+        TouchUpEvent 0
+        Delay 10489- TickCount()
+         TouchDownEvent 523,1038,0
+         TouchMoveEvent 522,1037,0,18
+         TouchMoveEvent 521,1032,0,24
+         TouchMoveEvent 520,1024,0,16
+         TouchMoveEvent 519,1011,0,8
+         TouchMoveEvent 518,995,0,18
+         TouchMoveEvent 516,979,0,7
+         TouchMoveEvent 516,961,0,17
+         TouchMoveEvent 516,944,0,9
+         TouchMoveEvent 516,925,0,17
+         TouchMoveEvent 517,907,0,9
+         TouchMoveEvent 517,889,0,17
+         TouchMoveEvent 518,872,0,7
+         TouchMoveEvent 518,857,0,16
+         TouchMoveEvent 518,843,0,17
+         TouchMoveEvent 519,829,0,8
+         TouchMoveEvent 521,815,0,16
+         TouchMoveEvent 522,801,0,8
+         TouchMoveEvent 522,787,0,15
+         TouchMoveEvent 523,774,0,16
+         TouchMoveEvent 524,761,0,9
+         TouchMoveEvent 525,748,0,15
+         TouchMoveEvent 525,736,0,16
+         TouchMoveEvent 527,723,0,8
+         TouchMoveEvent 527,711,0,15
+         TouchMoveEvent 528,698,0,16
+         TouchMoveEvent 528,686,0,8
+         TouchMoveEvent 529,674,0,16
+         TouchMoveEvent 531,661,0,11
+         TouchMoveEvent 533,649,0,14
+         TouchMoveEvent 534,639,0,8
+         TouchMoveEvent 535,626,0,16
+         TouchMoveEvent 536,613,0,16
+         TouchMoveEvent 537,602,0,9
+         TouchMoveEvent 539,590,0,16
+         TouchMoveEvent 540,580,0,15
+         TouchMoveEvent 540,569,0,8
+         TouchMoveEvent 541,560,0,16
+         TouchMoveEvent 541,551,0,7
+         TouchMoveEvent 542,542,0,16
+         TouchMoveEvent 542,533,0,19
+         TouchMoveEvent 542,523,0,8
+         TouchMoveEvent 542,513,0,13
+         TouchMoveEvent 543,502,0,16
+         TouchMoveEvent 544,493,0,8
+         TouchMoveEvent 544,483,0,15
+         TouchMoveEvent 544,474,0,17
+         TouchMoveEvent 544,465,0,8
+         TouchMoveEvent 544,457,0,15
+         TouchMoveEvent 544,448,0,8
+         TouchMoveEvent 544,439,0,15
+         TouchMoveEvent 544,431,0,16
+         TouchMoveEvent 544,424,0,9
+         TouchMoveEvent 545,418,0,17
+         TouchMoveEvent 545,413,0,15
+         TouchMoveEvent 545,407,0,8
+         TouchMoveEvent 545,401,0,16
+         TouchMoveEvent 545,395,0,9
+         TouchMoveEvent 545,390,0,15
+         TouchMoveEvent 544,385,0,8
+         TouchMoveEvent 544,380,0,16
+         TouchMoveEvent 544,376,0,16
+         TouchMoveEvent 543,372,0,10
+         TouchMoveEvent 543,369,0,13
+         TouchMoveEvent 542,366,0,16
+         TouchMoveEvent 542,364,0,9
+         TouchMoveEvent 542,363,0,16
+         TouchMoveEvent 542,361,0,8
+         TouchMoveEvent 542,359,0,16
+         TouchMoveEvent 542,358,0,16
+         TouchMoveEvent 541,356,0,8
+         TouchMoveEvent 541,355,0,16
+         TouchMoveEvent 541,354,0,9
+         TouchMoveEvent 541,353,0,15
+         TouchMoveEvent 541,352,0,16
+         TouchMoveEvent 541,351,0,9
+         TouchMoveEvent 541,349,0,16
+         TouchMoveEvent 542,349,0,8
+         TouchMoveEvent 542,348,0,16
+         TouchMoveEvent 542,347,0,24
+         TouchMoveEvent 542,346,0,32
+         TouchMoveEvent 542,345,0,33
+         TouchMoveEvent 543,345,0,9
+         Delay 11626- TickCount()
+          TouchUpEvent 0
+          Delay 13199- TickCount()
+           TouchDownEvent 96,931,0
+           Delay 13301- TickCount()
+            TouchUpEvent 0
+            Delay 23051- TickCount()
+             TouchDownEvent 360,886,0
+             Delay 23120- TickCount()
+              TouchUpEvent 0
+
+End Function
+
+
+Function DingShangGang()
+    // 上岗
+    KillApp "com.alibaba.android.rimet"
+    RunApp "com.alibaba.android.rimet"
+    Delay 23333
+    KillApp "com.alibaba.android.rimet"
+End Function
+
+
+Function DingGunDan()
+    // 滚蛋
+    KillApp "com.alibaba.android.rimet"
+    RunApp "com.alibaba.android.rimet"
+    Call DingQuanQuan()
+    Delay 23333
+    KillApp "com.alibaba.android.rimet"
+End Function
+
+
+Function ShitDing()
+    // 
+    If DateTime.WeekDay() = 6 Or DateTime.WeekDay() = 7 Then
+        TracePrint "LaoZi今天不上班 2333"
+        TracePrint DateTime.WeekDay()
+    ElseIf DateTime.Hour() = 9 Then
+        TracePrint "上岗 "
+        Call DingShangGang
+    ElseIf DateTime.Hour() = 7 Then
+        TracePrint "滚蛋 "
+        Call DingGunDan()
+        Delay 233333
+    Else
+        TracePrint "我在干嘛 :XD "
+    End If
+End Function
+
+
+Do 
+    Call ShitDing()
+    Delay 2333
+Loop
+
